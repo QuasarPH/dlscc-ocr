@@ -22,9 +22,9 @@ COPY nginx.conf /etc/nginx/conf.d/configfile.template
 
 COPY --from=vite-build /app/dist /usr/share/nginx/html
 
-# Expose port 8080 to the Docker host, so we can access it 
+# Expose port 5173 to the Docker host, so we can access it 
 # from the outside. This is a placeholder; Cloud Run will provide the PORT environment variable at runtime.
-ENV PORT 8080
+ENV PORT 5173
 ENV HOST 0.0.0.0
-EXPOSE 8080
+EXPOSE 5173
 CMD sh -c "envsubst '\$PORT' < /etc/nginx/conf.d/configfile.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"
