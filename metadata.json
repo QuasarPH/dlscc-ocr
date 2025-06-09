@@ -1,0 +1,6 @@
+{
+  "name": "Quasar Document Processor",
+  "description": "An intelligent loan document automation suite that uses AI to categorize uploaded documents.",
+  "requestFramePermissions": [],
+  "prompt": ""
+}
