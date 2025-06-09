@@ -7,7 +7,11 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "start": "vite start"
+    "start": "vite start",
+    "docker:clean": "docker rm -vf $(docker ps -aq) && docker rmi -f $(docker images -aq)",
+    "docker:build": "docker buildx build --platform linux/amd64 -t gcr.io/dlscc-ocr/dlscc-ocr .",
+    "docker:run":   "docker run --name dlscc-ocr -p 8080:80 -d gcr.io/dlscc-ocr/dlscc-ocr",
+    "docker:push": "docker push gcr.io/dlscc-ocr/dlscc-ocr"
   },
   "dependencies": {
     "react": "^19.1.0",

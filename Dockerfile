@@ -1,30 +1,31 @@
-# Step 1: Build the React app
-FROM node:20 as vite-build
+# Use the official Node.js runtime as the base image
+FROM node:20.10.0 as build
 
-WORKDIR /app
+# Set the working directory in the container
+WORKDIR /vbreddy-blog
 
-# Copy package.json and package-lock.json (or yarn.lock) files
-COPY package*.json yarn.lock ./
-
+# Copy package.json and package-lock.json to the working directory
+COPY package*.json ./
 
 # Install dependencies
-RUN yarn
+RUN npm install
 
-# Copy the rest of your app's source code
+# Copy the entire application code to the container
 COPY . .
 
-# Build your app
-RUN yarn build
+# Build the React app for production
+RUN npm run build
 
-# Step 2: Serve the app using Nginx
+# Use Nginx as the production server
 FROM nginx:alpine
-COPY nginx.conf /etc/nginx/conf.d/configfile.template
 
-COPY --from=vite-build /app/dist /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Expose port 5173 to the Docker host, so we can access it 
-# from the outside. This is a placeholder; Cloud Run will provide the PORT environment variable at runtime.
-ENV PORT 5173
-ENV HOST 0.0.0.0
-EXPOSE 5173
-CMD sh -c "envsubst '\$PORT' < /etc/nginx/conf.d/configfile.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"
+# Copy the built React app to Nginx's web server directory
+COPY --from=build /vbreddy-blog/dist /usr/share/nginx/html
+
+# Expose port 80 for the Nginx server
+EXPOSE 80
+
+# Start Nginx when the container runs
+CMD ["nginx", "-g", "daemon off;"]
