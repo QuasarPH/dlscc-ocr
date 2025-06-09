@@ -1,30 +1,30 @@
-# Use the slim version of the node 14 image as our base
-FROM node:14-slim
+# Step 1: Build the React app
+FROM node:20 as vite-build
 
-# Create a directory for our application in the container 
-RUN mkdir -p /usr/src/app
+WORKDIR /app
 
-# Set this new directory as our working directory for subsequent instructions
-WORKDIR /usr/src/app
+# Copy package.json and package-lock.json (or yarn.lock) files
+COPY package*.json yarn.lock ./
 
-# Copy all files in the current directory into the container
+
+# Install dependencies
+RUN yarn
+
+# Copy the rest of your app's source code
 COPY . .
 
-# Set the PYTHONPATH environment variable, which is occasionally necessary for certain node packages
-# 'PWD' is an environment variable that stores the path of the current working directory
-ENV PYTHONPATH=${PYTHONPATH}:${PWD}
+# Build your app
+RUN yarn build
 
-# Set the environment variable for the application's port
-# (Be sure to replace '4200' with your application's specific port number if different)
-ENV PORT 5173
+# Step 2: Serve the app using Nginx
+FROM nginx:alpine
+COPY nginx.conf /etc/nginx/conf.d/configfile.template
 
-# Install 'serve', a static file serving package globally in the container
-RUN npm install -g serve
+COPY --from=vite-build /app/dist /usr/share/nginx/html
 
-# Install all the node modules required by the React app
-RUN npm install
-# Build the React app
-RUN npm run build
-
-# Serve the 'build' directory on port 5173 using 'serve'
-CMD ["serve", "-s", "-l", "5173", "./build"]
+# Expose port 8080 to the Docker host, so we can access it 
+# from the outside. This is a placeholder; Cloud Run will provide the PORT environment variable at runtime.
+ENV PORT 8080
+ENV HOST 0.0.0.0
+EXPOSE 8080
+CMD sh -c "envsubst '\$PORT' < /etc/nginx/conf.d/configfile.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"
