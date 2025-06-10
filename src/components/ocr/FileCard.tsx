@@ -15,16 +15,6 @@ const CATEGORY_COLORS: Record<DocumentCategory, string> = {
 };
 
 // Assuming this type definition based on the component's usage
-interface UploadedFile {
-  id: string;
-  file: File;
-  previewUrl: string | null;
-  category: DocumentCategory;
-  error?: string;
-  isDataExtracting?: boolean;
-  isDataExtracted?: boolean;
-  dataExtractionError?: string;
-}
 
 interface FileCardProps {
   uploadedFile: UploadedFile;

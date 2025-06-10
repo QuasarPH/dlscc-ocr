@@ -45,7 +45,11 @@ export const classifyDocument = async (
       contents: { parts: [imagePart, textPart] }
     });
     
-    const classificationText = response.text.trim();
+    let classificationText = "";
+    if (response.text) {
+      classificationText = response.text.trim();
+    }
+    
     const validCategories = Object.values(DocumentCategory) as string[];
     
     if (validCategories.includes(classificationText)) {
@@ -88,10 +92,13 @@ export const extractDataFromDocument = async (
       contents: { parts: [imagePart, textPart] },
     });
 
-    let jsonStr = response.text.trim();
+    let jsonStr = "";
+    if (response.text) {
+      jsonStr = response.text.trim();
+    }
     
     // Remove markdown fences if present
-    const fenceRegex = /^```(\w*)?\s*\n?(.*?)\n?\s*```$/s;
+    const fenceRegex = /^```(\w*)?\s*\n?([\s\S]*?)\n?\s*```$/;
     const match = jsonStr.match(fenceRegex);
     if (match && match[2]) {
       jsonStr = match[2].trim();

@@ -148,3 +148,17 @@ declare interface TableColumn<T extends ExtractedData> {
 declare module 'pdfjs-dist/build/pdf.mjs' {
   export * from 'pdfjs-dist';
 }
+
+declare interface UploadedFile {
+  id: string;
+  file: File;
+  previewUrl: string | null;
+  category: DocumentCategory;
+  originalMimeType: string;
+  processedMimeType: string | null;
+  error?: string;
+  isDataExtracting?: boolean;
+  isDataExtracted?: boolean;
+  dataExtractionError?: string;
+  extractedData?: ExtractedData;
+}
