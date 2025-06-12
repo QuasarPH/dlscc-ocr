@@ -30,15 +30,15 @@ export function Topbar() {
               href="/forms"
               className="font-medium text-gray-600 hover:text-blue-600 transition-colors duration-200"
             >
-              Application Forms
+              Form Builder
             </Link>
             <Link
               href="/upload"
               className="font-medium text-gray-600 hover:text-blue-600 transition-colors duration-200"
             >
-              Perform OCR
+              Form Scanner
             </Link>
-            <button className="rounded-md bg-slate-800 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 transition-all duration-200 hover:scale-105">
+            <button className="rounded-md bg-slate-800 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-slate-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-600 transition-all duration-200 hover:scale-105">
               Log In
             </button>
           </div>
@@ -100,7 +100,7 @@ export function Topbar() {
             Perform OCR
           </Link>
           <div className="pt-2">
-            <button className="w-full rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">
+            <button className="w-full rounded-md bg-slate-800 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-slate-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-600">
               Log In
             </button>
           </div>

@@ -3,6 +3,21 @@
 import React from "react";
 import { DocumentCategory } from "@/constants";
 
+// NOTE: Assuming ExtractedData and UploadedFile types are defined elsewhere
+interface ExtractedData {
+  [key: string]: any;
+}
+interface UploadedFile {
+  id: string;
+  file: File;
+  extractedData?: ExtractedData;
+}
+interface TableColumn<T> {
+  key: keyof T;
+  label: string;
+  type?: "string" | "number" | "date" | "boolean";
+}
+
 interface DocumentDataTableProps<T extends ExtractedData> {
   category: DocumentCategory;
   files: UploadedFile[];
@@ -12,17 +27,12 @@ interface DocumentDataTableProps<T extends ExtractedData> {
 function formatDate(dateString: string | null | undefined): string {
   if (!dateString) return "N/A";
   try {
-    // Attempt to create a date object. If it's an invalid date string, it might result in "Invalid Date".
-    // Also handle cases where dateString might be like "MM/DD" without a year.
     const date = new Date(dateString);
     if (isNaN(date.getTime())) {
-      // If the date string is short or unparsable by new Date(), return as is if meaningful, else N/A
       return dateString.length > 2 ? dateString : "N/A";
     }
-    // Check if the original string contains a year. If not, toLocaleDateString might add current year.
-    // This is a simple check; more robust parsing might be needed for varied partial date formats.
     if (!/\d{4}/.test(dateString) && dateString.split(/[\/\-]/).length < 3) {
-      return dateString; // Return partial dates like "MM/DD" as is
+      return dateString;
     }
     return date.toLocaleDateString("en-US", {
       year: "numeric",
@@ -30,18 +40,17 @@ function formatDate(dateString: string | null | undefined): string {
       day: "numeric",
     });
   } catch {
-    return dateString; // Fallback to original string if parsing fails
+    return dateString;
   }
 }
 
 const escapeCsvValue = (value: unknown): string => {
   if (value === null || typeof value === "undefined") {
-    return ""; // Represent null or undefined as an empty string in CSV
+    return "";
   }
   const stringValue = String(value);
-  // If the string contains a comma, a newline, or a double quote, enclose it in double quotes
   if (/[",\n]/.test(stringValue)) {
-    return `"${stringValue.replace(/"/g, '""')}"`; // Escape internal double quotes by doubling them
+    return `"${stringValue.replace(/"/g, '""')}"`;
   }
   return stringValue;
 };
@@ -93,11 +102,11 @@ const DocumentDataTable = <T extends ExtractedData>({
     if (value === null || typeof value === "undefined") return "N/A";
     switch (type) {
       case "date":
-        return formatDate(String(value)); // Keep consistent with display, or use a specific CSV date format like YYYY-MM-DD
+        return formatDate(String(value));
       case "boolean":
         return value === true ? "Yes" : value === false ? "No" : "N/A";
       case "number":
-        return typeof value === "number" ? String(value) : "N/A"; // Numbers as plain strings for CSV
+        return typeof value === "number" ? String(value) : "N/A";
       default:
         return String(value);
     }
@@ -181,7 +190,8 @@ const DocumentDataTable = <T extends ExtractedData>({
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-100">
             <tr>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider sticky left-0 bg-gray-100 z-10 min-w-[150px] max-w-[250px] truncate">
+              {/* CHANGE HERE: Removed sticky classes */}
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider min-w-[150px] max-w-[250px] truncate">
                 File Name
               </th>
               {columns.map((col) => (
@@ -198,8 +208,9 @@ const DocumentDataTable = <T extends ExtractedData>({
           <tbody className="bg-white divide-y divide-gray-200">
             {validFiles.map((file) => (
               <tr key={file.id} className="hover:bg-gray-50 transition-colors">
+                {/* CHANGE HERE: Removed sticky classes and redundant background/hover classes */}
                 <td
-                  className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-800 sticky left-0 bg-white hover:bg-gray-50 z-10 min-w-[150px] max-w-[250px] truncate"
+                  className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-800 min-w-[150px] max-w-[250px] truncate"
                   title={file.file.name}
                 >
                   {file.file.name}
@@ -222,7 +233,7 @@ const DocumentDataTable = <T extends ExtractedData>({
           </tbody>
         </table>
       </div>
-      {validFiles.length === 0 && ( // This condition is now technically redundant due to the early return but kept for logical flow.
+      {validFiles.length === 0 && (
         <p className="p-4 text-sm text-gray-500">
           No data to display for this category.
         </p>
