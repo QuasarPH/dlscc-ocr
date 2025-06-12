@@ -135,7 +135,7 @@ declare interface UploadedFile {
   
   isDataExtracting?: boolean;
   isDataExtracted?: boolean;
-  extractedData?: ExtractedData | null;
+  extractedData?: ExtractedData | undefined;
   dataExtractionError?: string;
 }
 

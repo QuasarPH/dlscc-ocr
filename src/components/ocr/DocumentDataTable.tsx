@@ -5,7 +5,7 @@ import { DocumentCategory } from "@/constants";
 
 // NOTE: Assuming ExtractedData and UploadedFile types are defined elsewhere
 interface ExtractedData {
-  [key: string]: any;
+  [key: string]: never;
 }
 interface UploadedFile {
   id: string;

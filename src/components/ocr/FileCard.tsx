@@ -1,6 +1,8 @@
 "use client";
 
-import React from "react";
+// Add Image from next/image and useState from React to the imports
+import React, { useState } from "react";
+import Image from "next/image";
 import { NON_PROCESSABLE_FOR_DATA_EXTRACTION_CATEGORIES } from "@/constants";
 import Spinner from "./Spinner";
 import { DocumentCategory } from "@/constants";
@@ -13,8 +15,6 @@ const CATEGORY_COLORS: Record<DocumentCategory, string> = {
   [DocumentCategory.PROCESSING]: "bg-amber-500 text-black",
   [DocumentCategory.ERROR]: "bg-red-600 text-white",
 };
-
-// Assuming this type definition based on the component's usage
 
 interface FileCardProps {
   uploadedFile: UploadedFile;
@@ -36,12 +36,18 @@ const FileCard: React.FC<FileCardProps> = ({
     isDataExtracted,
     dataExtractionError,
   } = uploadedFile;
+
+  // State to handle image loading errors for a fallback
+  const [imageError, setImageError] = useState(false);
+
   const categoryColor =
     CATEGORY_COLORS[category as DocumentCategory] ||
     CATEGORY_COLORS[DocumentCategory.OTHERS];
 
   const isSuitableForDataExtraction =
-    !NON_PROCESSABLE_FOR_DATA_EXTRACTION_CATEGORIES.includes(category);
+    !NON_PROCESSABLE_FOR_DATA_EXTRACTION_CATEGORIES.includes(
+      category as DocumentCategory
+    );
 
   let statusMessage = "";
   let statusColor = "";
@@ -64,21 +70,32 @@ const FileCard: React.FC<FileCardProps> = ({
     statusColor = "text-gray-500";
   }
 
+  const isBlobUrl = previewUrl && previewUrl.startsWith("blob:");
+
   return (
     <div className="bg-white rounded-lg shadow-lg overflow-hidden flex flex-col transition-all duration-300 hover:shadow-xl">
       <div className="relative aspect-video bg-gray-100 flex items-center justify-center">
         {category === DocumentCategory.PROCESSING ? (
           <Spinner size="md" />
-        ) : previewUrl ? (
+        ) : isBlobUrl ? (
+          // Use standard <img> for blob URLs
+          // eslint-disable-next-line @next/next/no-img-element
           <img
             src={previewUrl}
             alt={`Preview of ${file.name}`}
             className="w-full h-full object-contain p-1 cursor-pointer"
             onClick={() => onPreview(uploadedFile)}
-            onError={(e) =>
-              (e.currentTarget.src =
-                "https://picsum.photos/300/200?grayscale&blur=2")
-            }
+          />
+        ) : previewUrl && !imageError ? (
+          // Use next/image for all other URLs
+          <Image
+            src={previewUrl}
+            alt={`Preview of ${file.name}`}
+            fill
+            className="object-contain p-1 cursor-pointer"
+            onClick={() => onPreview(uploadedFile)}
+            onError={() => setImageError(true)}
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
         ) : (
           <div
@@ -99,7 +116,9 @@ const FileCard: React.FC<FileCardProps> = ({
                 d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
               />
             </svg>
-            <p className="mt-2 text-xs">No image preview</p>
+            <p className="mt-2 text-xs">
+              {imageError ? "Image failed to load" : "No image preview"}
+            </p>
           </div>
         )}
         {onRemove && (
@@ -162,11 +181,9 @@ const FileCard: React.FC<FileCardProps> = ({
               <Spinner
                 size="sm"
                 color={statusColor.replace("text-", "border-")}
-                // Added align-middle for better visual consistency with text
                 className="inline-block mr-1 align-middle"
               />
             )}
-            {/* Best practice: wrap text in a span for alignment */}
             <span className="align-middle">{statusMessage}</span>
           </div>
         )}

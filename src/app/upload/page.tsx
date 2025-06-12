@@ -559,7 +559,7 @@ const UploadPage: React.FC = () => {
           />
         )}
 
-        <div className="mt-12 space-y-10">
+        <div className="mt-12 space-y-10 mb-4 sm:mb-10">
           {Object.entries(extractedDataByCategory).map(
             ([category, filesWithData]) => {
               if (filesWithData.length === 0) return null;
