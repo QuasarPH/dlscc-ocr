@@ -5,11 +5,11 @@ declare interface LoanApplicationData {
   bookNo: string | null;
   loanAmountPesos: number | null;
   loanPeriodMonths: number | null;
-  numberOfInstallments: number | null;
-  installmentAmount1: number | null;
-  installmentAmount2: number | null;
-  installmentAmountPesos: number | null;
-  firstPaymentDueDate: string | null; // Dates as string initially, format later
+  repaidIn: string | null;
+  semiMonthlyInstallmentsOf1: string | null;
+  semiMonthlyInstallmentsOf2: string | null;
+  semiMonthlyInstallmentsPesos: number | null;
+  allDueOn: string | null;
   loanPurpose: string | null;
   applicationDate: string | null;
   applicantName: string | null;
@@ -17,26 +17,29 @@ declare interface LoanApplicationData {
   makerName: string | null;
   makerUnobligedShares: number | null;
   makerLoans: string | null;
-  makerPrincipalLoanAmount: number | null;
-  makerCoMakerLoanAmount: number | null;
+  makerAsPrincipal: number | null;
+  makerAsCoMaker: number | null;
+  coMaker1Name: string | null;
   coMaker1UnobligedShares: number | null;
   coMaker1Loans: string | null;
-  coMaker1PrincipalLoanAmount: number | null;
-  coMaker1CoMakerLoanAmount: number | null;
+  coMaker1AsPrincipal: number | null;
+  coMaker1AsCoMaker: number | null;
+  coMaker2Name: string | null;
   coMaker2UnobligedShares: number | null;
   coMaker2Loans: string | null;
-  coMaker2PrincipalLoanAmount: number | null;
-  coMaker2CoMakerLoanAmount: number | null;
+  coMaker2AsPrincipal: number | null;
+  coMaker2AsCoMaker: number | null;
   coMakerCertificationDate: string | null;
   treasurerName: string | null;
   meetingHeldDateMonthDay: string | null;
   meetingHeldYear: number | null;
+  exceptAsToTheFollowing: string | null;
   minutesRecordedDateMonthDay: string | null;
   minutesRecordedYear: number | null;
   committeeMember1: string | null;
   committeeMember2: string | null;
   committeeMember3: string | null;
-  [key: string]: never; // For dynamic access
+  [key: string]: unknown; // For dynamic access
 }
 
 // Data structure for Unsecured Loans Application
@@ -45,7 +48,7 @@ declare interface UnsecuredLoansApplicationData {
   loanPeriodMonths: number | null;
   installmentAmountWords: string | null;
   installmentAmountNumeric: number | null;
-  firstInstallmentDueDate: string | null;
+  firstInstallmentDue: string | null;
   purchaseItem: string | null;
   purchaseAmountWords: string | null;
   purchaseAmountNumeric: number | null;
@@ -91,7 +94,7 @@ declare interface UnsecuredLoansApplicationData {
   disapprovalReason: string | null;
   managerTreasurerName: string | null;
   managerTreasurerDate: string | null;
-  [key: string]: never; // For dynamic access
+  [key: string]: unknown; // For dynamic access
 }
 
 // Data structure for Special Loans
@@ -105,6 +108,8 @@ declare interface SpecialLoansData {
   numberOfYearsOfService: number | null;
   loanType: string | null;
   loanAmount: number | null;
+  coMakerSignature: string | null;
+  makerSignature: string | null;
   certifiedEmployeeName: string | null;
   certifiedEmployerSchool: string | null;
   certifiedServiceDuration: number | null;
@@ -119,7 +124,7 @@ declare interface SpecialLoansData {
   managerDisapproved: boolean | null;
   managerTreasurerName: string | null;
   managerTreasurerDate: string | null;
-  [key: string]: never; // For dynamic access
+  [key: string]: unknown; // For dynamic access
 }
 
 declare type ExtractedData = LoanApplicationData | UnsecuredLoansApplicationData | SpecialLoansData;

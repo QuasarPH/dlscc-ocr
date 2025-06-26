@@ -9,7 +9,7 @@ export enum DocumentCategory {
 
 export const API_KEY_ERROR_MESSAGE = "API_KEY environment variable not set. Please ensure it's configured.";
 export const GEMINI_API_KEY = process.env.API_KEY;
-export const GEMINI_MODEL_NAME = 'gemini-2.5-pro';
+export const GEMINI_MODEL_NAME = 'gemini-2.5-pro-preview-06-05';
 
 export const MAX_TOTAL_FILES = 10;
 export const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
@@ -30,28 +30,30 @@ export const NON_PROCESSABLE_FOR_DATA_EXTRACTION_CATEGORIES = [DocumentCategory.
 // --- Field Definitions for Tables ---
 export const LOAN_APPLICATION_COLUMNS: TableColumn<LoanApplicationData>[] = [
   { key: 'applicantName', label: 'Applicant Name'},
-  { key: 'loanAmountPesos', label: 'Loan Amount (PHP)'},
-  { key: 'loanPeriodMonths', label: 'Period (Months)'},
+  { key: 'loanAmountPesos', label: 'Loan Amount (PHP)', type: 'number'},
+  { key: 'loanPeriodMonths', label: 'Period (Months)', type: 'number'},
   { key: 'applicationDate', label: 'Application Date', type: 'date' },
   { key: 'loanPurpose', label: 'Purpose' },
   { key: 'creditCooperativeName', label: 'Cooperative Name' },
   { key: 'creditCooperativeAddress', label: 'Cooperative Address' },
   { key: 'bookNo', label: 'Book No.' },
-  { key: 'numberOfInstallments', label: '# Installments'},
-  { key: 'semiMonthlyInstallmentsOf1', label: 'Semi-Monthly Installments of'},
-  { key: 'semiMonthlyInstallmentsOf2', label: 'Installment 2 (PESOS)'},
-  { key: 'semiMonthlyInstallmentsPesos', label: 'Installment 2 (PHP)', type: 'number' },
-  { key: 'allDueOn', label: 'All Due On'},
+  { key: 'repaidIn', label: 'Repaid In'},
+  { key: 'semiMonthlyInstallmentsOf1', label: 'Installment Amount (Words)'},
+  { key: 'semiMonthlyInstallmentsOf2', label: 'Installment Cents (Words)'},
+  { key: 'semiMonthlyInstallmentsPesos', label: 'Installment Amount (PHP)', type: 'number' },
+  { key: 'allDueOn', label: 'All Due On', type: 'date'},
   { key: 'applicantAddress', label: 'Applicant Address' },
   { key: 'makerName', label: 'Maker Name' },
   { key: 'makerUnobligedShares', label: 'Maker Unobliged Shares', type: 'number' },
   { key: 'makerLoans', label: 'Maker Loans' },
   { key: 'makerAsPrincipal', label: 'Maker Principal (PHP)', type: 'number' },
   { key: 'makerAsCoMaker', label: 'Maker Co-Maker (PHP)', type: 'number' },
+  { key: 'coMaker1Name', label: 'Co-Maker 1 Name' },
   { key: 'coMaker1UnobligedShares', label: 'Co-Maker 1 Unobliged Shares', type: 'number' },
   { key: 'coMaker1Loans', label: 'Co-Maker 1 Loans' },
   { key: 'coMaker1AsPrincipal', label: 'Co-Maker 1 Principal (PHP)', type: 'number' },
   { key: 'coMaker1AsCoMaker', label: 'Co-Maker 1 Co-Maker (PHP)', type: 'number' },
+  { key: 'coMaker2Name', label: 'Co-Maker 2 Name' },
   { key: 'coMaker2UnobligedShares', label: 'Co-Maker 2 Unobliged Shares', type: 'number' },
   { key: 'coMaker2Loans', label: 'Co-Maker 2 Loans' },
   { key: 'coMaker2AsPrincipal', label: 'Co-Maker 2 Principal (PHP)', type: 'number' },
@@ -70,12 +72,12 @@ export const LOAN_APPLICATION_COLUMNS: TableColumn<LoanApplicationData>[] = [
 
 export const UNSECURED_LOANS_APPLICATION_COLUMNS: TableColumn<UnsecuredLoansApplicationData>[] = [
   { key: 'applicantPrintedName', label: 'Applicant Name' },
-  { key: 'loanAmount', label: 'Loan Amount (PHP)'},
-  { key: 'loanPeriodMonths', label: 'Period (Months)'},
+  { key: 'loanAmount', label: 'Loan Amount (PHP)', type: 'number'},
+  { key: 'loanPeriodMonths', label: 'Period (Months)', type: 'number'},
   { key: 'applicationDate', label: 'Application Date', type: 'date' },
   { key: 'installmentAmountWords', label: 'Installment (Words)' },
   { key: 'installmentAmountNumeric', label: 'Installment (Numeric)', type: 'number' },
-  { key: 'firstInstallmentDue', label: 'First Installment Due'},
+  { key: 'firstInstallmentDue', label: 'First Installment Due', type: 'date'},
   { key: 'purchaseItem', label: 'Purchase Item' },
   { key: 'purchaseAmountWords', label: 'Purchase Amount (Words)' },
   { key: 'purchaseAmountNumeric', label: 'Purchase Amount (Numeric)', type: 'number' },
@@ -111,15 +113,17 @@ export const SPECIAL_LOANS_COLUMNS: TableColumn<SpecialLoansData>[] = [
   { key: 'middleInitial', label: 'MI' },
   { key: 'dateFiled', label: 'Date Filed', type: 'date' },
   { key: 'loanType', label: 'Loan Type' },
-  { key: 'loanAmount', label: 'Loan Amount (PHP)'},
+  { key: 'loanAmount', label: 'Loan Amount (PHP)', type: 'number'},
   { key: 'memberSchool', label: 'Member School/Unit' },
   { key: 'dateOfEmployment', label: 'Date of Employment', type: 'date' },
   { key: 'numberOfYearsOfService', label: 'Years of Service', type: 'number' },
+  { key: 'coMakerSignature', label: 'Co-Maker Signature' },
+  { key: 'makerSignature', label: 'Maker Signature' },
   { key: 'certifiedEmployeeName', label: 'Certified Employee Name' },
   { key: 'certifiedEmployerSchool', label: 'Certified Employer School' },
   { key: 'certifiedServiceDuration', label: 'Certified Service Duration (Yrs)', type: 'number' },
-  { key: 'thirteenthMonthAmount', label: '13th Month Amount (PHP)'},
-  { key: 'longevityPayAmount', label: 'Longevity Pay (PHP)'},
+  { key: 'thirteenthMonthAmount', label: '13th Month Amount (PHP)', type: 'number'},
+  { key: 'longevityPayAmount', label: 'Longevity Pay (PHP)', type: 'number'},
   { key: 'certifiedPrintedName', label: 'Certifier Name' },
   { key: 'certifiedDesignation', label: 'Certifier Designation' },
   { key: 'recommendApproval', label: 'Recommend Approval', type: 'boolean' },
@@ -143,13 +147,14 @@ export const COLUMN_DEFINITIONS: Record<DocumentCategory, TableColumn<never>[]> 
 
 // --- Gemini Prompt Templates for Data Extraction ---
 const SHARED_EXTRACTION_INSTRUCTIONS = `
-You are an expert OCR and data extraction tool. Analyze the provided document image.
+You are an expert OCR and data extraction tool. Analyze the provided document image carefully.
 Extract the data according to the JSON schema provided below and return ONLY the JSON object.
 If a field is not found, is blank, or not applicable, use null for its value. Do not make up data.
 For date fields, if a clear date is present, provide it in "YYYY-MM-DD" format if possible. If the format is ambiguous or partial (e.g., only month/day), return it as extracted. If no date, use null.
-For number fields, provide a numeric value or null. Remove currency symbols or commas before converting to a number.
+For number fields, provide a numeric value or null. Remove currency symbols, commas, and "P" or "PESOS" before converting to a number.
 For boolean fields, use true or false based on whether a corresponding checkbox is marked or text indicates affirmation/negation. If unclear, use null.
-Ignore all signatures.
+Pay special attention to tables and structured data sections.
+Ignore all signatures but extract the printed names.
 Do not add any explanatory text, greetings, or markdown formatting like \`\`\`json around the JSON object.
 The document category is:
 `;
@@ -158,12 +163,12 @@ const LOAN_APPLICATION_SCHEMA = `{
   "creditCooperativeName": "string | null",
   "creditCooperativeAddress": "string | null",
   "bookNo": "string | null",
-  "loanAmountPesos": "string | null",
-  "loanPeriodMonths": "string | null",
-  "numberOfInstallments": "string | null",
+  "loanAmountPesos": "number | null",
+  "loanPeriodMonths": "number | null",
+  "repaidIn": "string | null",
   "semiMonthlyInstallmentsOf1": "string | null",
   "semiMonthlyInstallmentsOf2": "string | null",
-  "semiMonthlyInstallmentsPesos": "string | null", // The one inside (P___)
+  "semiMonthlyInstallmentsPesos": "number | null",
   "allDueOn": "string | null",
   "loanPurpose": "string | null",
   "applicationDate": "string | null",
@@ -171,13 +176,15 @@ const LOAN_APPLICATION_SCHEMA = `{
   "applicantAddress": "string | null",
   "makerName": "string | null",
   "makerUnobligedShares": "number | null",
-  "makerLoans": "string | null", // In the first row, next to makerUnobligedShares
-  "makerAsPrincipal": "string | null", // In the first row, next to makerLoans
-  "makerAsCoMaker": "string | null", // In the first row, next to makerAsPrincipal
+  "makerLoans": "string | null",
+  "makerAsPrincipal": "number | null",
+  "makerAsCoMaker": "number | null",
+  "coMaker1Name": "string | null",
   "coMaker1UnobligedShares": "number | null",
   "coMaker1Loans": "string | null",
   "coMaker1AsPrincipal": "number | null",
   "coMaker1AsCoMaker": "number | null",
+  "coMaker2Name": "string | null",
   "coMaker2UnobligedShares": "number | null",
   "coMaker2Loans": "string | null",
   "coMaker2AsPrincipal": "number | null",
@@ -195,11 +202,11 @@ const LOAN_APPLICATION_SCHEMA = `{
 }`;
 
 const UNSECURED_LOANS_APPLICATION_SCHEMA = `{
-  "loanAmount": "string | null",
-  "loanPeriodMonths": "string | null",
+  "loanAmount": "number | null",
+  "loanPeriodMonths": "number | null",
   "installmentAmountWords": "string | null",
   "installmentAmountNumeric": "number | null",
-  "firstInstallmentDueDate": "string | null",
+  "firstInstallmentDue": "string | null",
   "purchaseItem": "string | null",
   "purchaseAmountWords": "string | null",
   "purchaseAmountNumeric": "number | null",
@@ -208,10 +215,10 @@ const UNSECURED_LOANS_APPLICATION_SCHEMA = `{
   "applicantPrintedName": "string | null",
   "addressUnit": "string | null",
   "payPeriod1": "string | null",
-  "payPeriod1NetPayBalance": "string | null",
+  "payPeriod1NetPayBalance": "number | null",
   "payPeriod2": "string | null",
-  "payPeriod2NetPayBalance": "string | null",
-  "semiMonthlyInstallmentAmount": "string | null",
+  "payPeriod2NetPayBalance": "number | null",
+  "semiMonthlyInstallmentAmount": "number | null",
   "netTakeHomePay": "number | null",
   "grossSemiMonthlyPay": "number | null",
   "netToGrossPercentage": "number | null",
@@ -240,7 +247,9 @@ const SPECIAL_LOANS_SCHEMA = `{
   "dateOfEmployment": "string | null",
   "numberOfYearsOfService": "number | null",
   "loanType": "string | null",
-  "loanAmount": "string | null",
+  "loanAmount": "number | null",
+  "coMakerSignature": "string | null",
+  "makerSignature": "string | null",
   "certifiedEmployeeName": "string | null",
   "certifiedEmployerSchool": "string | null",
   "certifiedServiceDuration": "number | null",
@@ -258,9 +267,41 @@ const SPECIAL_LOANS_SCHEMA = `{
 }`;
 
 export const DATA_EXTRACTION_PROMPT_TEMPLATES: Record<DocumentCategory, string> = {
-  [DocumentCategory.LOAN_APPLICATION]: `${SHARED_EXTRACTION_INSTRUCTIONS} ${DocumentCategory.LOAN_APPLICATION}\nJSON Schema:\n${LOAN_APPLICATION_SCHEMA}`,
-  [DocumentCategory.UNSECURED_LOANS_APPLICATION]: `${SHARED_EXTRACTION_INSTRUCTIONS} ${DocumentCategory.UNSECURED_LOANS_APPLICATION}\nJSON Schema:\n${UNSECURED_LOANS_APPLICATION_SCHEMA}`,
-  [DocumentCategory.SPECIAL_LOANS]: `${SHARED_EXTRACTION_INSTRUCTIONS} ${DocumentCategory.SPECIAL_LOANS}\nJSON Schema:\n${SPECIAL_LOANS_SCHEMA}`,
+  [DocumentCategory.LOAN_APPLICATION]: `${SHARED_EXTRACTION_INSTRUCTIONS} ${DocumentCategory.LOAN_APPLICATION}
+
+IMPORTANT NOTES for this form:
+- The installments section has text fields for amount in words AND a numeric field in parentheses (P___). Extract the numeric value for semiMonthlyInstallmentsPesos.
+- In the maker/co-maker table, extract ALL columns: Un-obligated Shares, Loans, As Principal, and As Co-Maker.
+- The "Loans" column often contains loan numbers or types.
+- Extract printed names, not signatures.
+
+JSON Schema:
+${LOAN_APPLICATION_SCHEMA}`,
+  
+  [DocumentCategory.UNSECURED_LOANS_APPLICATION]: `${SHARED_EXTRACTION_INSTRUCTIONS} ${DocumentCategory.UNSECURED_LOANS_APPLICATION}
+
+IMPORTANT NOTES for this form:
+- The form has "APPLICATION FOR UNSECURED LOANS" at the top.
+- Extract the payroll table data carefully - it has MONTH, GROSS, and NET columns.
+- The "firstInstallmentDue" field is on line "and service fees with the first installment due on ___".
+- Extract both checkbox states for recommend approval/disapproval.
+- The Net Pay Balance fields are part of the payroll verification section.
+
+JSON Schema:
+${UNSECURED_LOANS_APPLICATION_SCHEMA}`,
+  
+  [DocumentCategory.SPECIAL_LOANS]: `${SHARED_EXTRACTION_INSTRUCTIONS} ${DocumentCategory.SPECIAL_LOANS}
+
+IMPORTANT NOTES for this form:
+- This is for "13TH MONTH LOAN/LONGEVITY LOAN/ANNIVERSARY BONUS LOAN".
+- Extract the loan type from the "Type of Loan:" field.
+- The certification box contains employee and school information - extract all fields there.
+- Both co-maker and maker signature lines exist - extract printed names if available.
+- Extract checkbox states for approval/disapproval in both CREDIT COMMITTEE and manager sections.
+
+JSON Schema:
+${SPECIAL_LOANS_SCHEMA}`,
+  
   [DocumentCategory.OTHERS]: "", // Not applicable
   [DocumentCategory.PROCESSING]: "", // Not applicable
   [DocumentCategory.ERROR]: "", // Not applicable
