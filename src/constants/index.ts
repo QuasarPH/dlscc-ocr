@@ -9,7 +9,7 @@ export enum DocumentCategory {
 
 export const API_KEY_ERROR_MESSAGE = "API_KEY environment variable not set. Please ensure it's configured.";
 export const GEMINI_API_KEY = process.env.API_KEY;
-export const GEMINI_MODEL_NAME = 'gemini-2.5-pro-preview-06-05';
+export const GEMINI_MODEL_NAME = 'gemini-2.5-flash';
 
 export const MAX_TOTAL_FILES = 10;
 export const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];

@@ -39,7 +39,7 @@ declare interface LoanApplicationData {
   committeeMember1: string | null;
   committeeMember2: string | null;
   committeeMember3: string | null;
-  [key: string]: unknown; // For dynamic access
+  [key: string]: never; // For dynamic access
 }
 
 // Data structure for Unsecured Loans Application
@@ -94,7 +94,7 @@ declare interface UnsecuredLoansApplicationData {
   disapprovalReason: string | null;
   managerTreasurerName: string | null;
   managerTreasurerDate: string | null;
-  [key: string]: unknown; // For dynamic access
+  [key: string]: never; // For dynamic access
 }
 
 // Data structure for Special Loans
@@ -124,7 +124,7 @@ declare interface SpecialLoansData {
   managerDisapproved: boolean | null;
   managerTreasurerName: string | null;
   managerTreasurerDate: string | null;
-  [key: string]: unknown; // For dynamic access
+  [key: string]: never; // For dynamic access
 }
 
 declare type ExtractedData = LoanApplicationData | UnsecuredLoansApplicationData | SpecialLoansData;
