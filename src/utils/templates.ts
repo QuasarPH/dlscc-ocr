@@ -7,7 +7,7 @@ export interface Template {
   fields: Field[];
 }
 
-export const TEMPLATES: Record<"ApplicationForLoan" | "FormB", Template> = {
+export const TEMPLATES: Record<"ApplicationForLoan" | "UnsecuredLoansApplication" | "SpecialLoansApplication", Template> = {
     ApplicationForLoan: {
         title: "APPLICATION FOR LOAN",
         fields: [
@@ -52,10 +52,86 @@ export const TEMPLATES: Record<"ApplicationForLoan" | "FormB", Template> = {
           { name: "committeeMember3", label: "3rd Member of the Credit Committee", type: "text" }
         ]
       },
-      FormB: {
-        title: "LOAN APPLICATION – FORM B",
+      UnsecuredLoansApplication: {
+        title: "APPLICATION FOR UNSECURED LOANS",
         fields: [
-          { name: "name", label: "Name", type: "text" }
+          { name: "loanAmount", label: "Loan Amount", type: "number" },
+          { name: "loanPeriodMonths", label: "Loan Period (months)", type: "number" },
+          { name: "installmentAmountWords", label: "Installment Amount (In Words)", type: "text" },
+          { name: "installmentAmountNumeric", label: "Installment Amount (₱)", type: "number" },
+          { name: "firstInstallmentDue", label: "First Installment Due Date", type: "date" },
+          { name: "purchaseItem", label: "Purchase Item", type: "text" },
+          { name: "purchaseAmountWords", label: "Purchase Amount (In Words)", type: "text" },
+          { name: "purchaseAmountNumeric", label: "Purchase Amount (₱)", type: "number" },
+          { name: "costItem", label: "Cost Item", type: "text" },
+          { name: "applicationDate", label: "Date", type: "date" },
+          { name: "applicantName", label: "Name in Print & Signature", type: "text" },
+          { name: "applicantAddressUnit", label: "Address (Unit)", type: "text" },
+          { name: "payPeriod1", label: "Pay Period 1", type: "text" },
+          { name: "payPeriod1Balance", label: "Pay Period 1 Net Pay Balance", type: "number" },
+          { name: "payPeriod2", label: "Pay Period 2", type: "text" },
+          { name: "payPeriod2Balance", label: "Pay Period 2 Net Pay Balance", type: "number" },
+          { name: "semiMonthlyInstallment", label: "Semi-Monthly Installment", type: "number" },
+          { name: "netTakeHomePay", label: "Net-Take Home Pay", type: "number" },
+          { name: "grossSemiMonthlyPay", label: "Gross Semi-Monthly Pay", type: "number" },
+          { name: "netToGrossPercentage", label: "% of Net-Take Home Pay to Gross", type: "number" },
+          { name: "payrollPersonnelName", label: "Payroll Personnel Name", type: "text" },
+          { name: "month1", label: "Month 1", type: "text" },
+          { name: "month1Gross", label: "Month 1 Gross", type: "number" },
+          { name: "month1Net", label: "Month 1 Net", type: "number" },
+          { name: "month2", label: "Month 2", type: "text" },
+          { name: "month2Gross", label: "Month 2 Gross", type: "number" },
+          { name: "month2Net", label: "Month 2 Net", type: "number" },
+          { name: "month3", label: "Month 3", type: "text" },
+          { name: "month3Gross", label: "Month 3 Gross", type: "number" },
+          { name: "month3Net", label: "Month 3 Net", type: "number" },
+          { name: "month4", label: "Month 4", type: "text" },
+          { name: "month4Gross", label: "Month 4 Gross", type: "number" },
+          { name: "month4Net", label: "Month 4 Net", type: "number" },
+          { name: "month5", label: "Month 5", type: "text" },
+          { name: "month5Gross", label: "Month 5 Gross", type: "number" },
+          { name: "month5Net", label: "Month 5 Net", type: "number" },
+          { name: "month6", label: "Month 6", type: "text" },
+          { name: "month6Gross", label: "Month 6 Gross", type: "number" },
+          { name: "month6Net", label: "Month 6 Net", type: "number" },
+          { name: "month7", label: "Month 7", type: "text" },
+          { name: "month7Gross", label: "Month 7 Gross", type: "number" },
+          { name: "month7Net", label: "Month 7 Net", type: "number" },
+          { name: "totalGross", label: "Total Gross", type: "number" },
+          { name: "totalNet", label: "Total Net", type: "number" },
+          { name: "average", label: "Average", type: "number" },
+          { name: "disapprovalReason", label: "Disapproval Reason", type: "textarea" },
+          { name: "creditCommittee1", label: "Credit Committee Member 1", type: "text" },
+          { name: "creditCommittee2", label: "Credit Committee Member 2", type: "text" },
+          { name: "managerTreasurer", label: "DLSCC Manager/Treasurer", type: "text" },
+          { name: "managerDate", label: "Manager Approval Date", type: "date" }
+        ]
+      },
+      SpecialLoansApplication: {
+        title: "APPLICATION FOR SPECIAL LOAN",
+        fields: [
+          { name: "dateFiled", label: "Date Filed", type: "date" },
+          { name: "surname", label: "Surname", type: "text" },
+          { name: "firstName", label: "First Name", type: "text" },
+          { name: "middleInitial", label: "Middle Initial", type: "text" },
+          { name: "memberSchool", label: "Member School", type: "text" },
+          { name: "dateOfEmployment", label: "Date of Employment", type: "date" },
+          { name: "yearsOfService", label: "Number of Years of Service", type: "number" },
+          { name: "loanType", label: "Type of Loan", type: "text" },
+          { name: "specialLoanAmount", label: "Amount of Loan", type: "number" },
+          { name: "coMakerSignature", label: "Co-Maker Signature (if less than 10 yrs)", type: "text" },
+          { name: "makerSignature", label: "Signature of Maker", type: "text" },
+          { name: "certifiedEmployeeName", label: "Employee Name (Certification)", type: "text" },
+          { name: "certifiedSchoolName", label: "School Name (Certification)", type: "text" },
+          { name: "certifiedYearsOfService", label: "Years of Service (Certification)", type: "number" },
+          { name: "thirteenthMonthAmount", label: "13th Month Amount", type: "number" },
+          { name: "longevityPayAmount", label: "Longevity Pay Amount", type: "number" },
+          { name: "certifierName", label: "Certifier Name/Designation", type: "text" },
+          { name: "specialDisapprovalReason", label: "Disapproval Reason", type: "textarea" },
+          { name: "specialCreditCommittee1", label: "Credit Committee Member 1", type: "text" },
+          { name: "specialCreditCommittee2", label: "Credit Committee Member 2", type: "text" },
+          { name: "specialManagerTreasurer", label: "DLSCC Manager/Treasurer", type: "text" },
+          { name: "specialManagerDate", label: "Manager Approval Date", type: "date" }
         ]
       }
 };

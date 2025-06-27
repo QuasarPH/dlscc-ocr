@@ -1,6 +1,7 @@
 "use client";
 import { ApplicationForLoanForm } from "./forms/ApplicationForLoanForm";
-import { FormBForm } from "./forms/FormBForm";
+import { ApplicationForUnsecuredLoanForm } from "./forms/ApplicationForUnsecuredLoanForm";
+import { ApplicationForSpecialLoanForm } from "./forms/ApplicationForSpecialLoanForm";
 import { TEMPLATES } from "@/utils/templates";
 
 export function FormRenderer({
@@ -16,8 +17,20 @@ export function FormRenderer({
   switch (formType) {
     case "ApplicationForLoan":
       return <ApplicationForLoanForm formData={formData} onChange={onChange} />;
-    case "FormB":
-      return <FormBForm formData={formData} onChange={onChange} />;
+    case "UnsecuredLoansApplication":
+      return (
+        <ApplicationForUnsecuredLoanForm
+          formData={formData}
+          onChange={onChange}
+        />
+      );
+    case "SpecialLoansApplication":
+      return (
+        <ApplicationForSpecialLoanForm
+          formData={formData}
+          onChange={onChange}
+        />
+      );
     default:
       return null;
   }

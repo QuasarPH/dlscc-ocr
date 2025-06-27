@@ -15,30 +15,64 @@ export default function FormsPage() {
     useState<keyof typeof TEMPLATES>("ApplicationForLoan");
   const [formData, setFormData] = useState<Record<string, string>>({});
   const [pdfUrl, setPdfUrl] = useState("");
-  const [formBg, setFormBg] = useState("");
+  const [formBgs, setFormBgs] = useState<Record<string, string>>({});
 
-  // load background once
+  // Load all form backgrounds
   useEffect(() => {
-    fetch("/images/loan_application.png")
-      .then((r) => r.blob())
-      .then(
-        (blob) =>
-          new Promise<string>((res, rej) => {
-            const r = new FileReader();
-            r.onload = () => res(r.result as string);
-            r.onerror = rej;
-            r.readAsDataURL(blob);
-          })
-      )
-      .then(setFormBg)
-      .catch(console.error);
+    const loadBackgrounds = async () => {
+      const backgrounds: Record<string, string> = {};
+
+      const forms = [
+        { key: "ApplicationForLoan", path: "/images/loan_application.png" },
+        {
+          key: "UnsecuredLoansApplication",
+          path: "/images/unsecured_loan_application.png",
+        },
+        {
+          key: "SpecialLoansApplication",
+          path: "/images/special_loan_application.png",
+        },
+      ];
+
+      for (const form of forms) {
+        try {
+          const response = await fetch(form.path);
+          const blob = await response.blob();
+          const dataUrl = await new Promise<string>((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result as string);
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+          });
+          backgrounds[form.key] = dataUrl;
+        } catch (error) {
+          console.error(`Failed to load background for ${form.key}:`, error);
+        }
+      }
+
+      setFormBgs(backgrounds);
+    };
+
+    loadBackgrounds();
   }, []);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) =>
-    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  // Clear form data when switching forms
+  useEffect(() => {
+    setFormData({});
+    setPdfUrl("");
+  }, [formType]);
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
 
   const handleGenerate = async () => {
-    if (!formBg) return alert("Background not ready");
+    const formBg = formBgs[formType];
+    if (!formBg) {
+      alert("Form background not ready. Please wait a moment and try again.");
+      return;
+    }
+
     const blob = await generatePdfBlob(formType, formBg, formData);
     setPdfUrl(URL.createObjectURL(blob));
   };
@@ -61,22 +95,9 @@ export default function FormsPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <Topbar />
-      {/* 
-        Main content wrapper.
-        - `max-w-7xl`: Sets a max-width for large screens.
-        - `mx-auto`: Centers the content.
-        - `px-4 sm:px-6 lg:px-8`: Responsive horizontal padding.
-        - `py-8 lg:py-12`: Vertical padding.
-      */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
-        {/*
-          Grid container for the layout.
-          - `grid-cols-1`: A single column layout on mobile (default).
-          - `lg:grid-cols-5`: On large screens, it becomes a 5-column grid for more flexible distribution.
-          - `gap-8`: Sets the space between grid items.
-        */}
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
-          {/* Left Column: Form Controls (spans 3 of 5 columns on large screens) */}
+          {/* Left Column: Form Controls */}
           <div className="lg:col-span-3 space-y-6">
             <FormSelector
               options={
@@ -116,13 +137,8 @@ export default function FormsPage() {
             </div>
           </div>
 
-          {/* Right Column: PDF Viewer (spans 2 of 5 columns on large screens) */}
+          {/* Right Column: PDF Viewer */}
           <div className="lg:col-span-2">
-            {/* 
-              This container is STICKY on large screens, so it stays in view on scroll.
-              It is HIDDEN on mobile, as the mobile viewer is rendered below.
-              `top-24` provides space for the Topbar.
-            */}
             <div className="hidden lg:block sticky top-24">
               {pdfUrl ? (
                 <PdfViewer url={pdfUrl} />
@@ -135,11 +151,6 @@ export default function FormsPage() {
               )}
             </div>
 
-            {/* 
-              This is the PDF viewer for MOBILE screens only.
-              It's a normal block element shown only if a pdfUrl exists.
-              `lg:hidden` ensures it disappears when the sticky version appears.
-            */}
             <div className="block lg:hidden mt-8">
               {pdfUrl && <PdfViewer url={pdfUrl} />}
             </div>
