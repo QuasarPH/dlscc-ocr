@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Quasar",
-  description: "Your all in one loan automation suite.",
+  title: "DLSCC Loan Application Portal",
+  description: "Powered by Quasar",
 };
 
 export default function RootLayout({
