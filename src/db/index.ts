@@ -35,13 +35,12 @@ async function getPool(): Promise<pg.Pool> {
 
   try {
     const projectId = await auth.getProjectId();
-    const dbId = 'dlscc-db';
     
     console.log(`Connecting to database - Project ID: ${projectId}`);
 
     const connector = new Connector();
     const clientOpts = await connector.getOptions({
-      instanceConnectionName: `${projectId}:asia-southeast1:${dbId}`,
+      instanceConnectionName: `${projectId}:asia-southeast1:dlscc-db`,
       authType: AuthTypes.IAM,
     });
 
