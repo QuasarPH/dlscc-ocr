@@ -14,28 +14,27 @@ const HomePage: React.FC = () => {
         - `mx-2 sm:mx-12`: Provides responsive horizontal margins.
       */}
       <div className="flex flex-col items-center justify-center min-h-[calc(100vh-12rem)] text-center mt-10 bg-gray-50 p-6 rounded-lg shadow-xl mx-2 sm:mx-12">
-        {/*
-          RESPONSIVE IMAGE:
-          - The `width` and `height` props are important for Next.js to prevent layout shift by reserving space.
-          - The `className` with responsive prefixes controls the actual visual size.
-          - `w-auto` is crucial to maintain the image's aspect ratio.
-        */}
-        <Image
-          src="/logo-text.png"
-          alt="Quasar Logo"
-          width={240} // Base aspect ratio width
-          height={60} // Base aspect ratio height
-          className="w-auto h-10 sm:h-12 md:h-14 lg:h-16" // Responsive height
-        />
+        <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-800 mb-4">
+          DLSCC Loan Application Portal
+        </h1>
         <p className="mt-4 text-xl md:text-2xl lg:text-3xl text-gray-700 font-light">
-          Your all in one loan automation suite.
+          Your trusted partner for cooperative loan management.
         </p>
         <p className="mt-8 text-lg text-gray-600 max-w-2xl">
-          Streamline your entire loan workflow with our intelligent automation
-          platform. Generate applications as PDFs, then let Quasar&apos;s
-          advanced AI extract data with OCR and categorize every document with
-          precision.
+          Process loan applications efficiently with our comprehensive portal.
+          Generate application forms, scan and categorize documents, and extract
+          data automatically with advanced OCR technology.
         </p>
+        <div className="mt-12 flex items-center gap-2 text-sm text-gray-500">
+          <span>Powered by</span>
+          <Image
+            src="/logo-text.png"
+            alt="Quasar Logo"
+            width={80}
+            height={20}
+            className="w-auto h-5"
+          />
+        </div>
       </div>
     </div>
   );

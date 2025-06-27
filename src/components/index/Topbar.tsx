@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
 
 export function Topbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -14,13 +13,8 @@ export function Topbar() {
           {/* Logo Section */}
           <div className="flex-shrink-0">
             <Link href="/" className="flex items-center gap-2">
-              <Image
-                src="/logo-text.png"
-                alt="Quasar Logo"
-                width={120}
-                height={30}
-                className="h-8 w-auto"
-              />
+              <span className="text-xl font-bold text-gray-800">DLSCC</span>
+              <span className="text-sm text-gray-600">Loan Portal</span>
             </Link>
           </div>
 

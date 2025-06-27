@@ -14,7 +14,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "DLSCC Loan Application Portal",
-  description: "Powered by Quasar",
+  description:
+    "Process loan applications efficiently with our comprehensive portal. Powered by Quasar.",
 };
 
 export default function RootLayout({
