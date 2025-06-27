@@ -16,6 +16,7 @@ export default function FormsPage() {
   const [formData, setFormData] = useState<Record<string, string>>({});
   const [pdfUrl, setPdfUrl] = useState("");
   const [formBgs, setFormBgs] = useState<Record<string, string>>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Load all form backgrounds
   useEffect(() => {
@@ -78,17 +79,32 @@ export default function FormsPage() {
   };
 
   const handleSubmit = async () => {
-    const res = await fetch("/api/submit-form", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ formType, formData }),
-    });
-    const body = await res.json();
-    if (body.success) {
-      alert("Submitted to Google Sheet!");
-    } else {
-      console.error(body.message);
-      alert("Submission failed. See console.");
+    setIsSubmitting(true);
+    try {
+      const res = await fetch("/api/submit-application", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ formType, formData }),
+      });
+
+      const body = await res.json();
+
+      if (body.success) {
+        alert(
+          `Application submitted successfully! Application ID: ${body.applicationId}`
+        );
+        // Clear form data after successful submission
+        setFormData({});
+        setPdfUrl("");
+      } else {
+        console.error(body.error);
+        alert(`Submission failed: ${body.error}`);
+      }
+    } catch (error) {
+      console.error("Submission error:", error);
+      alert("Network error. Please try again.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -131,8 +147,9 @@ export default function FormsPage() {
                 onClick={handleSubmit}
                 variant="secondary"
                 className="w-full sm:w-auto"
+                disabled={isSubmitting}
               >
-                Submit to Sheet
+                {isSubmitting ? "Submitting..." : "Submit"}
               </Button>
             </div>
           </div>

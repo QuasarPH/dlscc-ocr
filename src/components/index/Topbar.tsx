@@ -32,6 +32,12 @@ export function Topbar() {
             >
               Form Scanner
             </Link>
+            <Link
+              href="/dashboard"
+              className="font-medium text-gray-600 hover:text-blue-600 transition-colors duration-200"
+            >
+              Dashboard
+            </Link>
             <button className="rounded-md bg-slate-800 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-slate-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-600 transition-all duration-200 hover:scale-105">
               Log In
             </button>
@@ -92,6 +98,13 @@ export function Topbar() {
             className="block rounded-md px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-100 hover:text-blue-600"
           >
             Form Scanner
+          </Link>
+          <Link
+            href="/dashboard"
+            onClick={() => setIsMenuOpen(false)}
+            className="block rounded-md px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-100 hover:text-blue-600"
+          >
+            Dashboard
           </Link>
           <div className="pt-2">
             <button className="w-full rounded-md bg-slate-800 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-slate-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-600">
