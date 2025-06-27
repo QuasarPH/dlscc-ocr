@@ -404,6 +404,57 @@ export function ApplicationForUnsecuredLoanForm({ formData, onChange }: Props) {
         <h3 className="text-lg font-semibold text-gray-700">
           Credit Committee
         </h3>
+
+        {/* Credit Committee Decision Radio Buttons */}
+        <div className="space-y-2">
+          <Label>Credit Committee Decision</Label>
+          <div className="space-y-2">
+            <label className="flex items-center space-x-2 cursor-pointer">
+              <input
+                type="radio"
+                name="unsecuredCreditCommitteeDecision"
+                value="approve"
+                checked={
+                  formData.unsecuredCreditCommitteeDecision === "approve"
+                }
+                onChange={onChange}
+                className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+              />
+              <span className="text-sm">We recommend approval of the loan</span>
+            </label>
+            <label className="flex items-center space-x-2 cursor-pointer">
+              <input
+                type="radio"
+                name="unsecuredCreditCommitteeDecision"
+                value="disapprove"
+                checked={
+                  formData.unsecuredCreditCommitteeDecision === "disapprove"
+                }
+                onChange={onChange}
+                className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+              />
+              <span className="text-sm">
+                We recommend disapproval of the loan due to the following
+                reason(s)
+              </span>
+            </label>
+            <label className="flex items-center space-x-2 cursor-pointer">
+              <input
+                type="radio"
+                name="unsecuredCreditCommitteeDecision"
+                value="na"
+                checked={
+                  formData.unsecuredCreditCommitteeDecision === "na" ||
+                  !formData.unsecuredCreditCommitteeDecision
+                }
+                onChange={onChange}
+                className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+              />
+              <span className="text-sm">N/A</span>
+            </label>
+          </div>
+        </div>
+
         <div>
           <Label htmlFor="disapprovalReason">
             Disapproval Reason (if applicable)
@@ -415,6 +466,9 @@ export function ApplicationForUnsecuredLoanForm({ formData, onChange }: Props) {
             onChange={onChange}
             rows={3}
             placeholder="We recommend disapproval of the loan due to the following reason(s):"
+            disabled={
+              formData.unsecuredCreditCommitteeDecision !== "disapprove"
+            }
           />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

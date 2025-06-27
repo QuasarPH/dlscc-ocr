@@ -86,6 +86,8 @@ export const FIELD_POSITIONS: Record<string, { x: number; y: number }> = {
     totalGross: { x: 382, y: 478 },
     totalNet: { x: 471, y: 478 },
     average: { x: 391, y: 504 },
+    // Radio button fields don't need positions as they're handled specially
+    unsecuredCreditCommitteeDecision: { x: -1, y: -1 }, // Placeholder
     disapprovalReason: { x: 76, y: 600 },
     creditCommittee1: { x: 94, y: 641 },
     creditCommittee2: { x: 315, y: 640 },
@@ -110,6 +112,8 @@ export const FIELD_POSITIONS: Record<string, { x: number; y: number }> = {
     thirteenthMonthAmount: { x: 187, y: 418 },
     longevityPayAmount: { x: 346, y: 418 },
     certifierName: { x: 356, y: 476 },
+    // Radio button fields don't need positions as they're handled specially
+    specialCreditCommitteeDecision: { x: -1, y: -1 }, // Placeholder
     specialDisapprovalReason: { x: 83, y: 596 },
     specialCreditCommittee1: { x: 80, y: 647 },
     specialCreditCommittee2: { x: 385, y: 645 },

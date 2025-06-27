@@ -249,6 +249,55 @@ export function ApplicationForSpecialLoanForm({ formData, onChange }: Props) {
         <h3 className="text-lg font-semibold text-gray-700">
           Credit Committee
         </h3>
+
+        {/* Credit Committee Decision Radio Buttons */}
+        <div className="space-y-2">
+          <Label>Credit Committee Decision</Label>
+          <div className="space-y-2">
+            <label className="flex items-center space-x-2 cursor-pointer">
+              <input
+                type="radio"
+                name="specialCreditCommitteeDecision"
+                value="approve"
+                checked={formData.specialCreditCommitteeDecision === "approve"}
+                onChange={onChange}
+                className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+              />
+              <span className="text-sm">We recommend approval of the loan</span>
+            </label>
+            <label className="flex items-center space-x-2 cursor-pointer">
+              <input
+                type="radio"
+                name="specialCreditCommitteeDecision"
+                value="disapprove"
+                checked={
+                  formData.specialCreditCommitteeDecision === "disapprove"
+                }
+                onChange={onChange}
+                className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+              />
+              <span className="text-sm">
+                We recommend disapproval of the loan due to the following
+                reason(s)
+              </span>
+            </label>
+            <label className="flex items-center space-x-2 cursor-pointer">
+              <input
+                type="radio"
+                name="specialCreditCommitteeDecision"
+                value="na"
+                checked={
+                  formData.specialCreditCommitteeDecision === "na" ||
+                  !formData.specialCreditCommitteeDecision
+                }
+                onChange={onChange}
+                className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+              />
+              <span className="text-sm">N/A</span>
+            </label>
+          </div>
+        </div>
+
         <div>
           <Label htmlFor="specialDisapprovalReason">
             Disapproval Reason (if applicable)
@@ -260,6 +309,7 @@ export function ApplicationForSpecialLoanForm({ formData, onChange }: Props) {
             onChange={onChange}
             rows={3}
             placeholder="We recommend disapproval of the loan due to the following reason(s):"
+            disabled={formData.specialCreditCommitteeDecision !== "disapprove"}
           />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

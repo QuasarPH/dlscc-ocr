@@ -1,6 +1,7 @@
 export type Field =
   | { name: string; label: string; type: "text" | "number" | "date" }
-  | { name: string; label: string; type: "textarea" };
+  | { name: string; label: string; type: "textarea" }
+  | { name: string; label: string; type: "radio"; options: { value: string; label: string }[] };
 
 export interface Template {
   title: string;
@@ -100,6 +101,16 @@ export const TEMPLATES: Record<"ApplicationForLoan" | "UnsecuredLoansApplication
           { name: "totalGross", label: "Total Gross", type: "number" },
           { name: "totalNet", label: "Total Net", type: "number" },
           { name: "average", label: "Average", type: "number" },
+          { 
+            name: "unsecuredCreditCommitteeDecision", 
+            label: "Credit Committee Decision", 
+            type: "radio",
+            options: [
+              { value: "approve", label: "We recommend approval of the loan" },
+              { value: "disapprove", label: "We recommend disapproval of the loan due to the following reason(s)" },
+              { value: "na", label: "N/A" }
+            ]
+          },
           { name: "disapprovalReason", label: "Disapproval Reason", type: "textarea" },
           { name: "creditCommittee1", label: "Credit Committee Member 1", type: "text" },
           { name: "creditCommittee2", label: "Credit Committee Member 2", type: "text" },
@@ -127,6 +138,16 @@ export const TEMPLATES: Record<"ApplicationForLoan" | "UnsecuredLoansApplication
           { name: "thirteenthMonthAmount", label: "13th Month Amount", type: "number" },
           { name: "longevityPayAmount", label: "Longevity Pay Amount", type: "number" },
           { name: "certifierName", label: "Certifier Name/Designation", type: "text" },
+          { 
+            name: "specialCreditCommitteeDecision", 
+            label: "Credit Committee Decision", 
+            type: "radio",
+            options: [
+              { value: "approve", label: "We recommend approval of the loan" },
+              { value: "disapprove", label: "We recommend disapproval of the loan due to the following reason(s)" },
+              { value: "na", label: "N/A" }
+            ]
+          },
           { name: "specialDisapprovalReason", label: "Disapproval Reason", type: "textarea" },
           { name: "specialCreditCommittee1", label: "Credit Committee Member 1", type: "text" },
           { name: "specialCreditCommittee2", label: "Credit Committee Member 2", type: "text" },

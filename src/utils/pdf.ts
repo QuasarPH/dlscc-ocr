@@ -58,10 +58,40 @@ export async function generatePdfBlob(
       doc.setFontSize(9);
       doc.text(text, pos.x, pos.y);
       doc.setFontSize(11);
+    } else if (f.type === "radio") {
+      // Don't render radio button values as text
+      return;
     } else {
       doc.text(text, pos.x, pos.y);
     }
   });
+
+  // Handle checkbox marks for credit committee decisions
+  if (formType === "UnsecuredLoansApplication" && formData.unsecuredCreditCommitteeDecision) {
+    if (formData.unsecuredCreditCommitteeDecision === "approve") {
+      // Draw checkmark for approval checkbox
+      doc.setFontSize(14);
+      doc.text("X", 81, 562); // Adjust coordinates based on form
+    } else if (formData.unsecuredCreditCommitteeDecision === "disapprove") {
+      // Draw checkmark for disapproval checkbox
+      doc.setFontSize(14);
+      doc.text("X", 81, 588); // Adjust coordinates based on form
+    }
+    doc.setFontSize(11);
+  }
+
+  if (formType === "SpecialLoansApplication" && formData.specialCreditCommitteeDecision) {
+    if (formData.specialCreditCommitteeDecision === "approve") {
+      // Draw checkmark for approval checkbox
+      doc.setFontSize(14);
+      doc.text("X", 73, 553); // Adjust coordinates based on form
+    } else if (formData.specialCreditCommitteeDecision === "disapprove") {
+      // Draw checkmark for disapproval checkbox
+      doc.setFontSize(14);
+      doc.text("X", 73, 586); // Adjust coordinates based on form
+    }
+    doc.setFontSize(11);
+  }
 
   return doc.output("blob");
 }
@@ -72,6 +102,7 @@ function getWrapWidth(fieldName: string): number {
     purpose: 480,
     approvalExceptions: 480,
     disapprovalReason: 450,
+    specialDisapprovalReason: 450,
   };
   
   return wrapWidths[fieldName] || 400; // Default wrap width
