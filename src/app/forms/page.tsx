@@ -78,13 +78,40 @@ export default function FormsPage() {
     setPdfUrl(URL.createObjectURL(blob));
   };
 
+  // Helper function to normalize form data before submission
+  const normalizeFormDataForSubmission = (
+    data: Record<string, string>
+  ): Record<string, string> => {
+    const normalized: Record<string, string> = {};
+
+    // Get all possible fields for the current form type
+    const template = TEMPLATES[formType];
+    const allFieldNames = template.fields.map((field) => field.name);
+
+    // Initialize all fields
+    allFieldNames.forEach((fieldName) => {
+      const value = data[fieldName];
+      // Convert empty strings to "N/A", but keep actual values
+      normalized[fieldName] =
+        value && value.trim() !== "" ? value.trim() : "N/A";
+    });
+
+    return normalized;
+  };
+
   const handleSubmit = async () => {
     setIsSubmitting(true);
     try {
+      // Normalize the form data before submission
+      const normalizedFormData = normalizeFormDataForSubmission(formData);
+
       const res = await fetch("/api/submit-application", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ formType, formData }),
+        body: JSON.stringify({
+          formType,
+          formData: normalizedFormData,
+        }),
       });
 
       const body = await res.json();

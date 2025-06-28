@@ -65,16 +65,84 @@ async function getPool(): Promise<pg.Pool> {
   }
 }
 
+// Generate a unique 6-character ID
+function generateRandomId(): string {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  let result = '';
+  for (let i = 0; i < 6; i++) {
+    result += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return result;
+}
+
+// Check if ID exists in database
+async function isIdUnique(id: string): Promise<boolean> {
+  const pool = await getPool();
+  const client = await pool.connect();
+  
+  try {
+    const result = await client.query(
+      'SELECT COUNT(*) FROM applications WHERE id = $1',
+      [id]
+    );
+    return parseInt(result.rows[0].count) === 0;
+  } finally {
+    client.release();
+  }
+}
+
+// Generate a unique ID
+async function generateUniqueId(): Promise<string> {
+  let id: string;
+  let isUnique: boolean;
+  
+  do {
+    id = generateRandomId();
+    isUnique = await isIdUnique(id);
+  } while (!isUnique);
+  
+  return id;
+}
+
 // Table creation with improved schema
 const ensureTablesExist = async (): Promise<void> => {
   const pool = await getPool();
   const client = await pool.connect();
   
   try {
-    // Create applications table
+    // First, check if applications table exists and get its structure
+    const tableExists = await client.query(`
+      SELECT EXISTS (
+        SELECT FROM information_schema.tables 
+        WHERE table_schema = 'public' 
+        AND table_name = 'applications'
+      );
+    `);
+
+    if (tableExists.rows[0].exists) {
+      // Check if ID column is still integer type
+      const columnInfo = await client.query(`
+        SELECT data_type 
+        FROM information_schema.columns 
+        WHERE table_name = 'applications' 
+        AND column_name = 'id'
+        AND table_schema = 'public';
+      `);
+
+      if (columnInfo.rows.length > 0 && columnInfo.rows[0].data_type === 'integer') {
+        console.log('Converting applications table ID from integer to varchar...');
+        
+        // Drop existing table and recreate with correct schema
+        // This is safe for development, but in production you'd want a proper migration
+        await client.query('DROP TABLE IF EXISTS applications CASCADE;');
+        console.log('Dropped existing applications table with integer ID');
+      }
+    }
+
+    // Create applications table with VARCHAR ID
     await client.query(`
       CREATE TABLE IF NOT EXISTS applications (
-        id SERIAL PRIMARY KEY,
+        id VARCHAR(6) PRIMARY KEY,
         application_type VARCHAR(50) NOT NULL CHECK (application_type IN ('ApplicationForLoan', 'UnsecuredLoansApplication', 'SpecialLoansApplication')),
         form_data JSONB NOT NULL,
         processed BOOLEAN NOT NULL DEFAULT FALSE,
@@ -83,6 +151,8 @@ const ensureTablesExist = async (): Promise<void> => {
         updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
       );
     `);
+
+    console.log('Applications table created/verified with VARCHAR(6) ID');
 
     // Create indexes for better performance
     await client.query(`
@@ -126,6 +196,18 @@ const ensureTablesExist = async (): Promise<void> => {
   }
 };
 
+// Helper function to normalize form data
+function normalizeFormData(formData: Record<string, string>): Record<string, string> {
+  const normalized: Record<string, string> = {};
+  
+  for (const [key, value] of Object.entries(formData)) {
+    // Convert empty strings to "N/A"
+    normalized[key] = value && value.trim() !== '' ? value.trim() : 'N/A';
+  }
+  
+  return normalized;
+}
+
 // CREATE - Submit a new application
 export async function submitApplication(
   applicationType: ApplicationType,
@@ -146,16 +228,22 @@ export async function submitApplication(
   const client = await pool.connect();
 
   try {
+    // Generate unique ID
+    const uniqueId = await generateUniqueId();
+    
+    // Normalize form data to replace empty strings with "N/A"
+    const normalizedFormData = normalizeFormData(formData);
+
     const result = await client.query(
-      `INSERT INTO applications(application_type, form_data, date_submitted) 
-       VALUES($1, $2, NOW()) 
+      `INSERT INTO applications(id, application_type, form_data, date_submitted) 
+       VALUES($1, $2, $3, NOW()) 
        RETURNING id`,
-      [applicationType, JSON.stringify(formData)]
+      [uniqueId, applicationType, JSON.stringify(normalizedFormData)]
     );
 
     const applicationId = result.rows[0].id;
     console.log(`Application submitted successfully with ID: ${applicationId}`);
-    return applicationId.toString();
+    return applicationId;
   } catch (error) {
     console.error('Error submitting application:', error);
     throw new Error(`Failed to submit application: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -219,7 +307,7 @@ export async function getApplications(filter: ApplicationFilter = {}): Promise<A
     const result = await client.query(query, params);
     return result.rows.map(row => ({
       ...row,
-      id: row.id.toString(),
+      id: row.id, // ID is already a string now
       formData: typeof row.formData === 'string' ? JSON.parse(row.formData) : row.formData,
       dateSubmitted: row.dateSubmitted.toISOString(),
       createdAt: row.createdAt.toISOString(),
@@ -235,8 +323,8 @@ export async function getApplications(filter: ApplicationFilter = {}): Promise<A
 
 // READ - Get a single application by ID
 export async function getApplicationById(id: string): Promise<Application | null> {
-  if (!id || isNaN(Number(id))) {
-    throw new Error('Valid application ID is required');
+  if (!id || id.length !== 6) {
+    throw new Error('Valid 6-character application ID is required');
   }
 
   await ensureTablesExist();
@@ -265,7 +353,7 @@ export async function getApplicationById(id: string): Promise<Application | null
     const row = result.rows[0];
     return {
       ...row,
-      id: row.id.toString(),
+      id: row.id, // ID is already a string now
       formData: typeof row.formData === 'string' ? JSON.parse(row.formData) : row.formData,
       dateSubmitted: row.dateSubmitted.toISOString(),
       createdAt: row.createdAt.toISOString(),
@@ -287,8 +375,8 @@ export async function updateApplication(
     processed?: boolean;
   }
 ): Promise<void> {
-  if (!id || isNaN(Number(id))) {
-    throw new Error('Valid application ID is required');
+  if (!id || id.length !== 6) {
+    throw new Error('Valid 6-character application ID is required');
   }
 
   if (!updates.formData && updates.processed === undefined) {
@@ -305,8 +393,10 @@ export async function updateApplication(
     let paramIndex = 1;
 
     if (updates.formData) {
+      // Normalize form data when updating
+      const normalizedFormData = normalizeFormData(updates.formData);
       updateFields.push(`form_data = $${paramIndex}`);
-      params.push(JSON.stringify(updates.formData));
+      params.push(JSON.stringify(normalizedFormData));
       paramIndex++;
     }
 
@@ -344,8 +434,8 @@ export async function updateApplication(
 
 // DELETE - Delete an application
 export async function deleteApplication(id: string): Promise<void> {
-  if (!id || isNaN(Number(id))) {
-    throw new Error('Valid application ID is required');
+  if (!id || id.length !== 6) {
+    throw new Error('Valid 6-character application ID is required');
   }
 
   await ensureTablesExist();

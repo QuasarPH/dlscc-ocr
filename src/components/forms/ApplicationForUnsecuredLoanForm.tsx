@@ -3,6 +3,7 @@ import { CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { useEffect } from "react";
 
 type Props = {
   formData: Record<string, string>;
@@ -12,6 +13,68 @@ type Props = {
 };
 
 export function ApplicationForUnsecuredLoanForm({ formData, onChange }: Props) {
+  // Calculate totals and average in real-time
+  useEffect(() => {
+    const monthFields = [1, 2, 3, 4, 5, 6, 7];
+
+    let totalGross = 0;
+    let totalNet = 0;
+    let validMonths = 0;
+
+    monthFields.forEach((num) => {
+      const grossValue = parseFloat(formData[`month${num}Gross`] || "0");
+      const netValue = parseFloat(formData[`month${num}Net`] || "0");
+
+      // Only count months that have at least one value entered
+      if (grossValue > 0 || netValue > 0) {
+        totalGross += grossValue;
+        totalNet += netValue;
+        validMonths++;
+      }
+    });
+
+    const average = validMonths > 0 ? totalNet / validMonths : 0;
+
+    // Update totals and average if they've changed
+    const currentTotalGross = parseFloat(formData.totalGross || "0");
+    const currentTotalNet = parseFloat(formData.totalNet || "0");
+    const currentAverage = parseFloat(formData.average || "0");
+
+    if (
+      currentTotalGross !== totalGross ||
+      currentTotalNet !== totalNet ||
+      Math.abs(currentAverage - average) > 0.01
+    ) {
+      // Create synthetic events to trigger the onChange handler
+      const createSyntheticEvent = (name: string, value: string) =>
+        ({
+          target: { name, value },
+        } as React.ChangeEvent<HTMLInputElement>);
+
+      // Update the calculated fields
+      onChange(createSyntheticEvent("totalGross", totalGross.toFixed(2)));
+      onChange(createSyntheticEvent("totalNet", totalNet.toFixed(2)));
+      onChange(createSyntheticEvent("average", average.toFixed(2)));
+    }
+  }, [
+    formData.month1Gross,
+    formData.month1Net,
+    formData.month2Gross,
+    formData.month2Net,
+    formData.month3Gross,
+    formData.month3Net,
+    formData.month4Gross,
+    formData.month4Net,
+    formData.month5Gross,
+    formData.month5Net,
+    formData.month6Gross,
+    formData.month6Net,
+    formData.month7Gross,
+    formData.month7Net,
+    onChange,
+    formData,
+  ]);
+
   return (
     <CardContent className="space-y-6">
       {/* Loan Details Section */}
@@ -338,6 +401,7 @@ export function ApplicationForUnsecuredLoanForm({ formData, onChange }: Props) {
                     <Input
                       name={`month${num}Gross`}
                       type="number"
+                      step="0.01"
                       value={formData[`month${num}Gross`] || ""}
                       onChange={onChange}
                       className="h-7 text-sm"
@@ -348,6 +412,7 @@ export function ApplicationForUnsecuredLoanForm({ formData, onChange }: Props) {
                     <Input
                       name={`month${num}Net`}
                       type="number"
+                      step="0.01"
                       value={formData[`month${num}Net`] || ""}
                       onChange={onChange}
                       className="h-7 text-sm"
@@ -362,20 +427,24 @@ export function ApplicationForUnsecuredLoanForm({ formData, onChange }: Props) {
                   <Input
                     name="totalGross"
                     type="number"
+                    step="0.01"
                     value={formData.totalGross || ""}
                     onChange={onChange}
-                    className="h-7 text-sm font-semibold"
+                    className="h-7 text-sm font-semibold bg-gray-50"
                     placeholder="0.00"
+                    readOnly
                   />
                 </td>
                 <td className="border border-gray-300 p-1">
                   <Input
                     name="totalNet"
                     type="number"
+                    step="0.01"
                     value={formData.totalNet || ""}
                     onChange={onChange}
-                    className="h-7 text-sm font-semibold"
+                    className="h-7 text-sm font-semibold bg-gray-50"
                     placeholder="0.00"
+                    readOnly
                   />
                 </td>
               </tr>
@@ -387,10 +456,12 @@ export function ApplicationForUnsecuredLoanForm({ formData, onChange }: Props) {
                   <Input
                     name="average"
                     type="number"
+                    step="0.01"
                     value={formData.average || ""}
                     onChange={onChange}
-                    className="h-7 text-sm"
+                    className="h-7 text-sm bg-gray-50"
                     placeholder="0.00"
+                    readOnly
                   />
                 </td>
               </tr>

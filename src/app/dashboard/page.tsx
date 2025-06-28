@@ -1,4 +1,4 @@
-// src/components/dashboard/DashboardPage.tsx
+// src/app/dashboard/page.tsx
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
@@ -53,6 +53,7 @@ export default function DashboardPage() {
   // Filters
   const [typeFilter, setTypeFilter] = useState<string>("ALL");
   const [processedFilter, setProcessedFilter] = useState<string>("ALL");
+  const [searchQuery, setSearchQuery] = useState<string>("");
 
   // Modal state
   const [selectedApplication, setSelectedApplication] =
@@ -77,7 +78,19 @@ export default function DashboardPage() {
 
       if (data.success) {
         setApplications(data.applications);
-        setFilteredApplications(data.applications);
+
+        // Apply search filter on the frontend
+        const filtered = searchQuery
+          ? data.applications.filter((app: Application) => {
+              const applicantName = getApplicantName(app).toLowerCase();
+              const appId = app.id.toLowerCase();
+              const query = searchQuery.toLowerCase();
+
+              return applicantName.includes(query) || appId.includes(query);
+            })
+          : data.applications;
+
+        setFilteredApplications(filtered);
         setCounts(data.counts);
       } else {
         setError(data.error || "Failed to fetch applications");
@@ -88,7 +101,7 @@ export default function DashboardPage() {
     } finally {
       setLoading(false);
     }
-  }, [typeFilter, processedFilter]);
+  }, [typeFilter, processedFilter, searchQuery]);
 
   useEffect(() => {
     fetchApplications();
@@ -253,6 +266,155 @@ export default function DashboardPage() {
     setEditFormData((prev) => ({ ...prev, [key]: value }));
   };
 
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+  };
+
+  const clearSearch = () => {
+    setSearchQuery("");
+  };
+
+  // Helper function to get all possible fields for a form type
+  const getAllFormFields = (applicationType: ApplicationType): string[] => {
+    const fieldSets = {
+      ApplicationForLoan: [
+        "coopName",
+        "coopAddress",
+        "bookNo",
+        "loanFor",
+        "period",
+        "repaidIn",
+        "installmentPesos",
+        "installmentPesos2",
+        "installmentPesosNumber",
+        "loanDueDate",
+        "purpose",
+        "dateSigned",
+        "applicantSignature",
+        "applicantAddress",
+        "makerName",
+        "makerShares",
+        "makerLoanNumber",
+        "makerLoanPrincipal",
+        "makerLoanCoMaker",
+        "comaker1Name",
+        "comaker1Shares",
+        "comaker1LoanNumber",
+        "comaker1LoanPrincipal",
+        "comaker1LoanCoMaker",
+        "comaker2Name",
+        "comaker2Shares",
+        "comaker2LoanNumber",
+        "comaker2LoanPrincipal",
+        "comaker2LoanCoMaker",
+        "certifyDate",
+        "certifyTreasurer",
+        "meetingHeldDay",
+        "meetingHeldYear",
+        "approvalExceptions",
+        "minutesDatetime",
+        "minutesYear",
+        "committeeMember1",
+        "committeeMember2",
+        "committeeMember3",
+      ],
+      UnsecuredLoansApplication: [
+        "loanAmount",
+        "loanPeriodMonths",
+        "installmentAmountWords",
+        "installmentAmountNumeric",
+        "firstInstallmentDue",
+        "purchaseItem",
+        "purchaseAmountWords",
+        "purchaseAmountNumeric",
+        "costItem",
+        "applicationDate",
+        "applicantName",
+        "applicantAddressUnit",
+        "payPeriod1",
+        "payPeriod1Balance",
+        "payPeriod2",
+        "payPeriod2Balance",
+        "semiMonthlyInstallment",
+        "netTakeHomePay",
+        "grossSemiMonthlyPay",
+        "netToGrossPercentage",
+        "payrollPersonnelName",
+        "month1",
+        "month1Gross",
+        "month1Net",
+        "month2",
+        "month2Gross",
+        "month2Net",
+        "month3",
+        "month3Gross",
+        "month3Net",
+        "month4",
+        "month4Gross",
+        "month4Net",
+        "month5",
+        "month5Gross",
+        "month5Net",
+        "month6",
+        "month6Gross",
+        "month6Net",
+        "month7",
+        "month7Gross",
+        "month7Net",
+        "totalGross",
+        "totalNet",
+        "average",
+        "unsecuredCreditCommitteeDecision",
+        "disapprovalReason",
+        "creditCommittee1",
+        "creditCommittee2",
+        "managerTreasurer",
+        "managerDate",
+      ],
+      SpecialLoansApplication: [
+        "dateFiled",
+        "surname",
+        "firstName",
+        "middleInitial",
+        "memberSchool",
+        "dateOfEmployment",
+        "yearsOfService",
+        "loanType",
+        "specialLoanAmount",
+        "coMakerSignature",
+        "makerSignature",
+        "certifiedEmployeeName",
+        "certifiedSchoolName",
+        "certifiedYearsOfService",
+        "thirteenthMonthAmount",
+        "longevityPayAmount",
+        "certifierName",
+        "specialCreditCommitteeDecision",
+        "specialDisapprovalReason",
+        "specialCreditCommittee1",
+        "specialCreditCommittee2",
+        "specialManagerTreasurer",
+        "specialManagerDate",
+      ],
+    };
+
+    return fieldSets[applicationType] || [];
+  };
+
+  // Get a complete form data object with all fields, filling missing ones with "N/A"
+  const getCompleteFormData = (
+    application: Application
+  ): Record<string, string> => {
+    const allFields = getAllFormFields(application.applicationType);
+    const completeData: Record<string, string> = {};
+
+    allFields.forEach((field) => {
+      completeData[field] = application.formData[field] || "N/A";
+    });
+
+    return completeData;
+  };
+
   if (error) {
     return (
       <div className="min-h-screen bg-gray-50">
@@ -322,13 +484,71 @@ export default function DashboardPage() {
           </div>
         )}
 
-        {/* Filters */}
+        {/* Filters and Search */}
         <Card className="mb-8">
           <CardHeader>
-            <CardTitle>Filters</CardTitle>
+            <CardTitle>Filters & Search</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {/* Search Bar */}
+              <div className="md:col-span-1">
+                <Label htmlFor="search">Search by ID or Applicant Name</Label>
+                <div className="relative mt-1">
+                  <Input
+                    id="search"
+                    type="text"
+                    placeholder="Enter application ID or applicant name..."
+                    value={searchQuery}
+                    onChange={handleSearchChange}
+                    className="pl-10 pr-10"
+                  />
+                  {searchQuery && (
+                    <button
+                      onClick={clearSearch}
+                      className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600"
+                      title="Clear search"
+                    >
+                      <svg
+                        className="h-4 w-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M6 18L18 6M6 6l12 12"
+                        />
+                      </svg>
+                    </button>
+                  )}
+                  <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                    <svg
+                      className="h-4 w-4 text-gray-400"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                      />
+                    </svg>
+                  </div>
+                </div>
+                {searchQuery && (
+                  <p className="text-sm text-gray-600 mt-2">
+                    {filteredApplications.length} result(s) found for &quot;
+                    {searchQuery}&quot;
+                  </p>
+                )}
+              </div>
+
+              {/* Application Type Filter */}
               <div>
                 <Label htmlFor="type-filter">Application Type</Label>
                 <Select value={typeFilter} onValueChange={setTypeFilter}>
@@ -349,6 +569,8 @@ export default function DashboardPage() {
                   </SelectContent>
                 </Select>
               </div>
+
+              {/* Processing Status Filter */}
               <div>
                 <Label htmlFor="processed-filter">Processing Status</Label>
                 <Select
@@ -526,7 +748,13 @@ export default function DashboardPage() {
                     </h4>
                     {!isEditMode && (
                       <Button
-                        onClick={() => setIsEditMode(true)}
+                        onClick={() => {
+                          setIsEditMode(true);
+                          // Initialize edit form data with complete field set
+                          setEditFormData(
+                            getCompleteFormData(selectedApplication)
+                          );
+                        }}
                         variant="outline"
                         size="sm"
                       >
@@ -537,7 +765,9 @@ export default function DashboardPage() {
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-96 overflow-y-auto">
                     {Object.entries(
-                      isEditMode ? editFormData : selectedApplication.formData
+                      isEditMode
+                        ? editFormData
+                        : getCompleteFormData(selectedApplication)
                     ).map(([key, value]) => (
                       <div key={key}>
                         <Label className="text-sm font-medium text-gray-700 capitalize">
@@ -549,7 +779,7 @@ export default function DashboardPage() {
                           key.toLowerCase().includes("date") ? (
                             <Input
                               type="date"
-                              value={value || ""}
+                              value={value === "N/A" ? "" : value || ""}
                               onChange={(e) =>
                                 handleFormDataChange(key, e.target.value)
                               }
@@ -558,7 +788,7 @@ export default function DashboardPage() {
                           ) : key.toLowerCase().includes("reason") ||
                             key.toLowerCase().includes("purpose") ? (
                             <Textarea
-                              value={value || ""}
+                              value={value === "N/A" ? "" : value || ""}
                               onChange={(e) =>
                                 handleFormDataChange(key, e.target.value)
                               }
@@ -568,7 +798,7 @@ export default function DashboardPage() {
                           ) : (
                             <Input
                               type="text"
-                              value={value || ""}
+                              value={value === "N/A" ? "" : value || ""}
                               onChange={(e) =>
                                 handleFormDataChange(key, e.target.value)
                               }
@@ -576,7 +806,13 @@ export default function DashboardPage() {
                             />
                           )
                         ) : (
-                          <p className="text-sm text-gray-900 mt-1 p-2 bg-gray-50 rounded">
+                          <p
+                            className={`text-sm mt-1 p-2 bg-gray-50 rounded ${
+                              value === "N/A"
+                                ? "text-gray-400 italic"
+                                : "text-gray-900"
+                            }`}
+                          >
                             {value || "N/A"}
                           </p>
                         )}
